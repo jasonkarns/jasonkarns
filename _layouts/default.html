@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+
+{% seo %}
+  </head>
+  <body>
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <h1 id="project_title">{{ site.title | default: site.github.repository_name }}</h1>
+          <h2 id="project_tagline">{{ site.description | default: site.github.project_tagline }}</h2>
+        </header>
+    </div>
+
+    <div id="main_content_wrap" class="outer">
+      <main id="main_content" class="inner">
+        {{ content }}
+      </main>
+    </div>
+
+    <div id="footer_wrap" class="outer">
+      <footer class="inner"> </footer>
+    </div>
+  </body>
+</html>
