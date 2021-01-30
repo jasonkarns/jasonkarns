@@ -20,12 +20,6 @@ meta:
   _import_original_post_id: '99'
   original_post_id: '359'
   _wp_old_slug: '359'
-author:
-  login: jasonkarns
-  email: jason.karns@gmail.com
-  display_name: jasonkarns
-  first_name: Jason
-  last_name: Karns
 permalink: "/2010/03/10/google-analytics-tagging/"
 ---
 <p>Imagine if you will, a page with a significant amount of dynamic page elements. For instance, a slide-out panel containing a number of ‘panes’ containing topical information on various ‘factors’. Let’s assume that once this slide-out is open, we wish the user to be able to jump from factor to factor (similar to a slideshow) using buttons along the bottom of each factor. Let’s go even deeper and say that within each factor, we have a collection of close-up images. Again, the user should be able to navigate the close-ups via next/previous buttons similar to a slideshow. In addition to the next/previous buttons, along the top edge of the ‘close-ups’ section are progress indicator dots that highlight according to which close-up is active (and link directly to individual close-ups).  Given that this functionality should work without JavaScript, all of these UI controls are marked up as links. And we have quite a few of them—to wit, <var>x*(x-1)</var> factor links (for <var>x</var> factors) plus <var>x*y</var> (direct links to close ups per factor) plus <var>x*(2y)</var> (next/prev links for each <var>y</var> close-up for each factor). So, let’s say we have 3 factors and 3 close-ups per factor. We now have 33 links! And now the task is to tag each of these links with unique labels that will be sent back to Google Analytics upon each click event. I’ve broken down a brief subset of the analytics tags for each of the three types of links below.</p>
