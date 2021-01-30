@@ -1,7 +1,7 @@
 title: Code Nomad
 # email: your-email@example.com
 description: Tales of a Transient Programmer
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/musical-train" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jasonkarns
 github_username:  jasonkarns
