@@ -1,0 +1,49 @@
+---
+layout: post
+title: Revisiting the C in CSS
+date:
+type: post
+parent_id: '0'
+published: false
+password: ''
+status: draft
+categories: []
+tags: []
+meta:
+  _sd_is_markdown: '1'
+  _edit_last: '6343952'
+  _import_session_id: 5e4813f98aafa
+  _import_original_post_id: '344'
+  _oembed_3a324731fc2736945416182a6f1850bd: "{{unknown}}"
+  _oembed_c5ef3031593504bdb8c20f8f3852f0a2: "{{unknown}}"
+author:
+  login: jasonkarns
+  email: jason.karns@gmail.com
+  display_name: jasonkarns
+  first_name: Jason
+  last_name: Karns
+permalink: "/"
+---
+<p>While working on another user style, I ran into a peculiarity between Firefox+Stylish and Chrome+Stylish that I hadn't dealt with in a while. An author's rule with lower specificity was overriding my user-style rule (which had higher specificity), but only in Firefox. The answer lies in the cascading rules in CSS.</p>
+<p>Most developers are aware of the specificity rules which govern how style conflicts are resolved. (see <a href="http://www.htmldog.com/guides/cssadvanced/specificity/">specificity</a>) However, we all tend to forget how the precedence of different style <em>sheets</em> is determined. Here's a refresher. In ascending order of precedence:</p>
+<ol>
+<li>User Agent</li>
+<li>User declarations (normal)</li>
+<li>Author declarations (normal)
+<ol>
+<li>External style sheets</li>
+<li>Embedded style declarations</li>
+<li>Inline style declarations</li>
+</ol>
+</li>
+<li>Author declarations (important)
+<ol>
+<li>External style sheets</li>
+<li>Embedded style declarations</li>
+<li>Inline style declarations</li>
+</ol>
+</li>
+<li>User declarations (important)</li>
+</ol>
+<p>This cascade supersedes any specificity rankings. Thus,</p>
+<p>http://www.w3.org/TR/2011/REC-CSS2-20110607/cascade.html#cascade</p>

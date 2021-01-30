@@ -1,0 +1,54 @@
+---
+layout: post
+title: 'IE6, MooTools, and MultiBox: A Tale of Woe'
+date: 2010-06-04 11:00:39.000000000 -04:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories: []
+tags:
+- flash
+- ie6
+- javascript
+- mootools
+meta:
+  _edit_last: '6343952'
+  _import_session_id: 5e4813f98aafa
+  _import_original_post_id: '125'
+  _publicize_job_id: '40726887088'
+author:
+  login: jasonkarns
+  email: jason.karns@gmail.com
+  display_name: jasonkarns
+  first_name: Jason
+  last_name: Karns
+permalink: "/2010/06/04/ie6-mootools-and-multibox-a-tale-of-woe/"
+---
+<p>On a recent project, I traveled to the depths of hell and came out alive. Here’s how it went down…</p>
+<p>The initial task wasn’t all that unique or difficult. We were to add a few videos (most hosted on YouTube, with a couple self-hosted) that would open in a lightbox-style popup when the thumbnails were clicked. MooTools was already being used on the project, so we selected MultiBox by <a href="http://www.phatfusion.net">phatfusion</a> as the pop-up of choice. I won’t go into the reason(s) for selecting MultiBox. The more I work with it, the less I like it; but that’s for another post. So, we have MooTools as the JavaScript framework and MultiBox as the plug-in.</p>
+<h2>Base Functionality</h2>
+<p>Keeping progressive enhancement techniques in mind, we set the destination URL of the thumbnails to be the video page on YouTube. This gives crawlers the ability to find the true video destination, as well as user’s without JavaScript the ability to find the video. Now, I realize that YouTube doesn’t even work without JavaScript, but that’s their problem. (On a side-note, it’s really sad that they use JavaScript to inject the Flash video player, when the <a href="http://code.google.com/p/swfobject/wiki/documentation">SWFObject static publishing method</a> would work just fine).</p>
+<p>So the first problem we run into is that, by default, the MultiBox media type of <var>youtube</var> expects the link URL to point directly to the video and not to the video page on YouTube (one reason to ditch MultiBox). Note the difference in URLs below. The video identifier is the same in both (<var>eCzEkiIucUk</var>) but rather than passing it as a parameter to the ‘watch’ page, we can pass it as the slug to /v.</p>
+<p>Video page on YouTube: <a href="http://www.youtube.com/watch?v=eCzEkiIucUk">http://www.youtube.com/watch?v=eCzEkiIucUk</a><br />
+Actual video on YouTube: <a href="http://www.youtube.com/v/eCzEkiIucUk">http://www.youtube.com/v/eCzEkiIucUk</a></p>
+<p>To deal with this, I wrote a quick script that executes <code>ondomready</code>. It parses the <var>v</var> parameter value out of the query-string and rewrites the URL to point directly to the video. This way, when MultiBox opens and inspects the URL to load, the video itself is opened in the MultiBox pop-up rather than the entire YouTube page.</p>
+<h2>Roadblock #1 : MultiBox ‘types’</h2>
+<p>At this point, everything is working as expected until the client requests that we provide a customized fallback message for users without Flash. This is a perfectly reasonable request. Ideally the fallback content would be a transcript of the video and perhaps some still images from the video. Maybe even a link to the raw H.264 video. Of course, in this case we are requested to simply provide a ‘Please install Flash’ message. Unfortunately, MultiBox doesn’t have a way to provide custom fallback content for its <var>youtube</var> type. (Yet another reason to ditch MultiBox.)</p>
+<p>Rather than using the <var>youtube</var> type and its out-of-the-box functionality, we’ll switch over to the <var>element</var> type. This type allows you to target an element in the dom and the targeted element (and children) is cloned into the MultiBox pop-up. For this to work, we’ll provide our own <code>object</code> element, complete with cross-browser nesting of objects (<a href="http://code.google.com/p/swfobject/wiki/documentation">see SWFObject static publishing</a>) and our own custom no-flash fallback content. Each video thumbnail will now have the actual video markup next to it in the source, hidden via CSS. The thumbnail is marked up to link to the video page on YouTube (for JS-off users). On page load, the links are rewritten to point to the fragment identifier of the video object in the page (e.g. <code>href="#video1"</code>). This way, when MultiBox is activated using the ‘<var>element</var>’ type, it will grab the <code>object</code> element with <code>id="video1"</code> and clone its contents into the pop-up.</p>
+<h2>Roadblock #2: MooTools ‘clone()’</h2>
+<p>With the exception of IE6, everything works as expected across browsers both with and without JavaScript. However, it fails in IE6 (of course). Upon inspection of the cloned <code>object</code> elements after they are inserted into the pop-ups, we notice that they no longer contain the <code>param</code> children they’re supposed to. The original <code>object</code> elements still contain their <code>param</code> children, but the clones do not. Internally, MultiBox uses the MooTools <code>clone()</code> method on the base Element class so I put together a quick test page to verify that MooTools’ <code>clone()</code> method works properly in IE6 on <code>object</code> elements. It failed the test, and I <a href="https://mootools.lighthouseapp.com/projects/2706-mootools/tickets/855">filed a bug</a> against MooTools.</p>
+<p>The workaround for the MooTools <code>clone()</code> bug is to use the old-school <code>innerHTML</code> property ourselves rather than allowing MooTools to do proper DOM manipulation in the background. So I open up MultiBox and find the routine whereby it uses <code>clone()</code> and add a quick hack. I check if the browser is IE6 and if so, use <code>innerHTML</code> to copy the <code>object</code> element (and all its children) into the pop-up.</p>
+<h2>Roadblock #3: IE6 ‘flashvars’</h2>
+<p>So now we have the object being correctly cloned into the pop-up when a user clicks the video thumbnail. An then I get another ticket. All the YouTube videos are playing, but the self-hosted video is not. Why is the video not playing? This particular video is played using a SWF player which takes the FLV file name to play via the <code>flashvars</code> param. I notice that the FLV file isn’t being requested in IE6. But we just fixed the <code>param</code> bug and the children are all there! Or are they really? After some more debugging and googling, I find that IE6 resets the value of the <code>flashvars</code> param when its <code>innerHTML</code> is modified.</p>
+<p>You’re not surprised, are you?</p>
+<p>After some more searching, I find <a href="http://siderite.blogspot.com/2007/10/flashvars-empty-after-internet-explorer.html">a great blog post</a> that describes the solution. Rather than passing the different variables to the flash player using the <code>flashvars</code> param, we’ll just add them to the SWF query-string. So this:</p>
+<pre><a href="http://player.swf">http://player.swf</a></pre>
+<p>becomes this:</p>
+<pre><a href="http://player.swf?path=video1.flv">http://player.swf?path=video1.flv</a></pre>
+<p>Since we’re using SWFObject’s static publishing method, there are 2 <code>object</code> elements. One intended for IE, and another one, intended for everyone else. The proper <code>object</code> (for Firefox, Chrome, et. al.) is nested within the IE <code>object</code> and hidden via Conditional Comments. Since this whole <code>flashvars</code> mess is only a problem for IE6, we only need to modify the outer <code>object</code> element.</p>
+<h2>Roadblock #4: MultiBox’s flvplayer</h2>
+<p>Just when you thought we were out of the woods, we have one last issue. Now that we have the video objects with proper fallbacks, and the elements being cloned properly, and the config file information passed correctly, we <em>still</em> don’t have a functioning video in IE. Since we modified the outer IE object element, thanks to the previous issue, we’ve broken the video in all versions of IE. What’s the problem this time? It turns out that the flvplayer.swf that comes packaged with the phatfusion MultiBox doesn’t stream the video properly when the FLV file name is passed via query-string. Solution? Ditch phatfusion’s flvplayer and use another! (I recommend <a href="http://www.longtailvideo.com/players/">any of the JW players</a> if your situation fits the non-commercial bill)</p>
+<h2>When the bugs align…</h2>
+<p>So at the end of this ordeal, I had three more reasons to avoid phatfusion’s MultiBox widget, I had filed yet another bug against MooTools, and I had conquered yet another bug in IE6. And it all piled up because of a tiny bug in a particular flvplayer; that was caused by the solution to a specific bug in IE6; which was only a problem because of a bug in a particular version of MooTools; which was only a problem because of a poorly designed API in MultiBox; which was encountered because the client wanted to display a download button for Flash; mostly for users who aren’t even able to install Flash if they wanted to. Don’t you just love web development?</p>

@@ -1,0 +1,49 @@
+---
+layout: post
+title: CSS Reset
+date: 2010-02-15 23:34:17.000000000 -05:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories: []
+tags:
+- css
+meta:
+  _edit_last: '6343952'
+  _oembed_4ae13090973648a764005600a72de23e: "{{unknown}}"
+  wpsd_autopost: '1'
+  _import_session_id: 5e4813f98aafa
+  _import_original_post_id: '54'
+  original_post_id: '359'
+  _wp_old_slug: '359'
+author:
+  login: jasonkarns
+  email: jason.karns@gmail.com
+  display_name: jasonkarns
+  first_name: Jason
+  last_name: Karns
+permalink: "/2010/02/15/css-reset/"
+---
+<p>Why start with a blank slate? After years of web development and hundreds of sites, starting from scratch on each project really turns into a buzz kill. Nobody wants to spend time rehashing the same issues from site to site. So many of us have turned to CSS Resets. As we all know, CSS Resets are designed to fix cross-browser inconsistencies by rebasing all or most default styles to a common state. I’ve always had a problem with these resets. Many of the styles in these resets are never used (how often do you use <code>q</code>, <code>ins</code>, <code>del</code>, and <code>table</code> anymore, really?). Other styles are completely overridden. I would wager that by the end of a long project, one could probably remove the CSS Reset without affecting the design (save maybe the margin/padding rules). <span class="vcard"><a class="fn url" href="http://snook.ca/">Jonathan Snook</a></span> <a href="http://snook.ca/archives/html_and_css/no_css_reset/">feels the same way</a>. For these reasons, I’ve generally used the universal margin/padding reset:</p>
+<pre class="css">* {margin:0; padding:0;}</pre>
+<p>There is quite a lot of contention around the subject both for and against as well as the reasoned <a href="http://meiert.com/en/blog/20080419/reset-style-sheets-are-bad/">centrist</a>.</p>
+<p>So, rather than continue to rail against their futility, performance penalty, or outright boorishness, I thought I’d actually use a CSS reset a few times and report my findings.</p>
+<h2>Decision Time!</h2>
+<p><a href="http://meyerweb.com/eric/tools/css/reset/index.html">CSS Reset</a> by <span class="vcard"><a class="fn url" href="http://meyerweb.com/">Eric Meyer</a></span> or <a href="http://developer.yahoo.com/yui/reset/">YUI Reset</a>? Well, after watching <a href="http://vimeo.com/7530607">this video</a> (you should, too), my decision was firmly in the Meyer camp.</p>
+<h2>First Reactions</h2>
+<p>Who uses Firebug? Okay, sorry, who <strong>doesn’t</strong> use Firebug? If you don’t, you should, and if you do, you likely won’t like Meyer’s reset without it first being modified. Ladies and gentlemen of the jury, Exhibit A:</p>
+<p><img src="{{ site.baseurl }}/assets/2010/02/reset_thumb.png" alt="reset_thumb" width="454" height="912" class="alignnone size-full wp-image-528" /></p>
+<p>Due to the first rule in the reset, the font-size property is applied to (nearly) every element. However, <code>font-size</code> is also an inherited property. Which means nearly every element inherits its value from its parent, while simultaneously being reset itself by the same rule it inherited! The first rule of nearly every stylesheet of mine usually includes a set of font properties (<code>font-family</code>, <code>font-size</code>, and <code>line-height</code>). With these properties already being set, there is no reason to have them in my CSS Reset, so let’s remove the offending rule and relieve some of Firebug pressure.</p>
+<p><img src="{{ site.baseurl }}/assets/2010/02/reset3_thumb.png" alt="reset3_thumb" width="454" height="231" class="alignnone size-full wp-image-524" /></p>
+<p>Whew, that’s better.</p>
+<h2>Don’t Lose Your Focus!</h2>
+<p>The most offending rule in Eric’s reset is his outline rule:</p>
+<pre class="css">:focus { outline: none; }</pre>
+<p>Sure, he adds a comment to remind users to be sure to specify proper outlines for keyboard users. But you and I can both count on one hand the number of times a proper outline is reinstated for the <code>:focus</code> pseudo-class. Besides, I subscribe to the belief that frameworks and tools should make it easy to fall into the <a href="http://www.codinghorror.com/blog/2007/08/falling-into-the-pit-of-success.html">pit of success</a> rather than making it harder to do things the <em>right</em> way. Luckily, <span class="vcard"><a class="fn url" href="http://www.splintered.co.uk/">Patrick H. Lauke</a></span> has <em><a href="http://24ways.org/2009/dont-lose-your-focus">outlined</a></em> (sorry, I couldn’t help it) a method to remove the outline during its less-useful moments, while retaining the outline as necessary for keyboard navigation. In brief, simply:</p>
+<pre class="css">a:hover, a:active { outline: none; }</pre>
+<p>This will hide the ugly outline during the click action on a link as well as during the time the page loads (so long as the user doesn’t move their mouse). I think this fits nicely in the 80/20 category.</p>
+<h2>And Now?</h2>
+<p>So where does that leave us? I’m not sure. I’m still not entirely convinced of the utility of a CSS Reset. However, I believe my two minor modifications do bring Meyer’s Reset a bit further into the '’useful’ category without being a pain or downright harmful. My version of the reset is hosted at <a href="http://github.com/">GitHub,</a> so if you don’t like it, go fork it!</p>
+<p><a title="http://github.com/jasonkarns/css-reset" href="http://github.com/jasonkarns/css-reset">http://github.com/jasonkarns/css-reset</a></p>
