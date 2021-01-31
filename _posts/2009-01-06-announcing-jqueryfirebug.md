@@ -1,11 +1,7 @@
 ---
 title: Announcing jQuery.Firebug
 date: 2009-01-06 14:49:29 -05:00
-tags:
-- debugging
-- firebug
-- javascript
-- jquery
+tags: debugging firebug javascript jquery
 permalink: "/2009/01/06/announcing-jqueryfirebug/"
 ---
 
