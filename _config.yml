@@ -12,10 +12,3 @@ markdown: kramdown
 theme: jekyll-theme-slate
 plugins:
   - jekyll-feed
-
-defaults:
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: default
